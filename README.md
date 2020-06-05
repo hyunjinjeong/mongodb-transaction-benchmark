@@ -28,7 +28,7 @@ mvn -pl site.ycsb:postgrenosql-binding -am clean package
 
 ### MongoDB
 
-1. mongod 시작
+1. mongod 실행
 
 ```shell
 mongod
@@ -48,12 +48,11 @@ workload a 실행 예시.
 테스트가 끝나면 해당 collection의 모든 documents 삭제
 
 ```shell
-mongo
-use ycsb;
+mongo ycsb
 db.usertable.remove({});
 ```
 
-자세한 옵션은 `./MongoDB.md` 파일 참조.
+자세한 옵션은 [MongoDB.md](https://github.com/hyunjinjeong/mongodb-transaction-benchmark/blob/master/MongoDB.md) 파일 참조.
 
 ### PostgreSQL
 
@@ -94,7 +93,7 @@ psql -U postgres test
 delete from usertable;
 ```
 
-자세한 옵션은 `./PostgreSQL.md` 파일 참조.
+자세한 옵션은 [PostgreSQL.md](https://github.com/hyunjinjeong/mongodb-transaction-benchmark/blob/master/PostgreSQL.md) 파일 참조.
 
 ## DB Versions
 
