@@ -15,15 +15,8 @@ permissions and limitations under the License. See accompanying
 LICENSE file.
 -->
 
-## Quick Start
-
-**CREATE DATABASE test;**
-
-**CREATE TABLE usertable (YCSB_KEY VARCHAR(255) PRIMARY KEY, YCSB_VALUE JSONB not NULL);**
-
-**GRANT ALL PRIVILEGES ON DATABASE test to postgres;**
-
 ## Configure the parameters in the properties file
+
 **postgrenosql.url = jdbc:postgresql://localhost:5432/test**
 
 Defines the connection string to the Postgres Server. Replace localhost by the address of your Postgres Server, 5432 by the port your Server is listing to and test by the name of your database.

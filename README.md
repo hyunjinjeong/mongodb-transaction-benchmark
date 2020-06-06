@@ -2,9 +2,15 @@
 
 MongoDB랑 Postgre NoSQL을 YCSB를 이용해서 벤치마크.
 
-## DB-binding 파일 생성
+## 환경 설정
 
-Maven 3 버전을 사용해야 함.
+1. [JDK 설치](https://www.oracle.com/java/technologies/javase-jdk14-downloads.html)
+
+2. [Maven 설치](https://maven.apache.org/download.cgi)
+
+3. [MongoDB](https://www.mongodb.com/download-center/community), [PostgreSQL](https://www.postgresql.org/download/) 설치
+
+## YCSB 빌드
 
 전체 YCSB를 빌드하려면:
 
@@ -86,8 +92,14 @@ delete from usertable;
 
 자세한 옵션은 [PostgreSQL.md](https://github.com/hyunjinjeong/mongodb-transaction-benchmark/blob/master/PostgreSQL.md) 파일 참조.
 
-## DB Versions
+## Environments
 
-- MongoDB 4.2.7
+- OS: Windows 10, 2004
 
-- PostgreSQL 12.3
+- Java: Java 14
+
+- Maven: 3.6.3
+
+- MongoDB: 4.2.7
+
+- PostgreSQL: 12.3
