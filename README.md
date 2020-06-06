@@ -1,13 +1,12 @@
 # MongoDB Transaction Benchmark with YCSB
 
-처음에 메이븐 설치해야 함.
-MongoDB, PostgreSQL 각각 설치.
+MongoDB랑 Postgre NoSQL을 YCSB를 이용해서 벤치마크.
 
 ## DB-binding 파일 생성
 
-YCSB requires the use of Maven 3; if you use Maven 2, you may see errors such as these.
+Maven 3 버전을 사용해야 함.
 
-To build the full distribution, with all database bindings:
+전체 YCSB를 빌드하려면:
 
 `./YCSB` 폴더에서
 
@@ -15,7 +14,7 @@ To build the full distribution, with all database bindings:
 mvn clean package
 ```
 
-To build a single database binding:
+하나의 Database binding을 생성하려면:
 
 ```shell
 mvn -pl site.ycsb:mongodb-binding -am clean package
@@ -28,15 +27,7 @@ mvn -pl site.ycsb:postgrenosql-binding -am clean package
 
 ### MongoDB
 
-1. mongod 실행
-
-```shell
-mongod
-```
-
-2. 아래 명령어 실행.
-
-workload a 실행 예시.
+Workload A 실행 예시.
 
 ```shell
 # load the data
@@ -56,7 +47,7 @@ db.usertable.remove({});
 
 ### PostgreSQL
 
-1. 데이터베이스, 테이블 생성 및 권한 초기 설정
+1. 초기 설정
 
 ```postgresql
 CREATE DATABASE test;
@@ -75,9 +66,9 @@ postgrenosql.passwd = postgres
 postgrenosql.autocommit = true
 ```
 
-3. `./db-bindings/postgrenosql/` 폴더에서 아래 명령어 실행.
+3. 아래 명령어 실행.
 
-workload a 실행 예시.
+Workload A 실행 예시.
 
 ```shell
 # load the data
@@ -97,5 +88,6 @@ delete from usertable;
 
 ## DB Versions
 
-MongoDB 4.2.7
-PostgreSQL 12.3
+- MongoDB 4.2.7
+
+- PostgreSQL 12.3
