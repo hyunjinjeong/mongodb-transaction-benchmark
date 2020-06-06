@@ -37,9 +37,9 @@ Workload A 실행 예시.
 
 ```shell
 # load the data
-./bin/ycsb load mongodb -s -P workloads/workloada > results/mongodb-outputLoad.txt
+.\bin\ycsb load mongodb -s -P workloads\workloada -P .\properties\small.dat > .\results\mongodb-outputLoad.txt
 # run the workload
-./bin/ycsb run mongodb -s -P workloads/workloada > results/mongodb-outputRun.txt
+.\bin\ycsb run mongodb -s -P workloads\workloada -P .\properties\small.dat > .\results\mongodb-outputRun.txt
 ```
 
 테스트가 끝나면 해당 collection의 모든 documents 삭제
@@ -78,9 +78,9 @@ Workload A 실행 예시.
 
 ```shell
 # load the data
-.\bin\ycsb load postgrenosql -s -P .\workloads\workloada -P .\postgrenosql.properties > results/postgres-outputLoad.txt
+.\bin\ycsb load postgrenosql -s -P .\workloads\workloada -P .\properties\small.dat -P .\properties\postgrenosql.properties > .\results\postgres-outputLoad.txt
 # run the workload
-.\bin\ycsb run postgrenosql -s -P .\workloads\workloada -P .\postgrenosql.properties > results/postgres-outputRun.txt
+.\bin\ycsb run postgrenosql -s -P .\workloads\workloada -P .\properties\small.dat -P .\properties\postgrenosql.properties > .\results\postgres-outputRun.txt
 ```
 
 테스트가 끝나면 해당 relation의 모든 records 삭제
