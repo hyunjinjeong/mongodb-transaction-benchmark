@@ -15,23 +15,23 @@
  * LICENSE file.
  */
 
-package com.yahoo.ycsb.workloads;
+package site.ycsb.workloads;
 
 import java.util.Properties;
-import com.yahoo.ycsb.*;
-import com.yahoo.ycsb.generator.CounterGenerator;
-import com.yahoo.ycsb.generator.DiscreteGenerator;
-import com.yahoo.ycsb.generator.ExponentialGenerator;
-import com.yahoo.ycsb.generator.Generator;
-import com.yahoo.ycsb.generator.ConstantIntegerGenerator;
-import com.yahoo.ycsb.generator.HotspotIntegerGenerator;
-import com.yahoo.ycsb.generator.HistogramGenerator;
-import com.yahoo.ycsb.generator.NumberGenerator;
-import com.yahoo.ycsb.generator.ScrambledZipfianGenerator;
-import com.yahoo.ycsb.generator.SkewedLatestGenerator;
-import com.yahoo.ycsb.generator.UniformIntegerGenerator;
-import com.yahoo.ycsb.generator.ZipfianGenerator;
-import com.yahoo.ycsb.measurements.Measurements;
+import site.ycsb.*;
+import site.ycsb.generator.CounterGenerator;
+import site.ycsb.generator.DiscreteGenerator;
+import site.ycsb.generator.ExponentialGenerator;
+import site.ycsb.generator.Generator;
+import site.ycsb.generator.ConstantIntegerGenerator;
+import site.ycsb.generator.HotspotIntegerGenerator;
+import site.ycsb.generator.HistogramGenerator;
+import site.ycsb.generator.NumberGenerator;
+import site.ycsb.generator.ScrambledZipfianGenerator;
+import site.ycsb.generator.SkewedLatestGenerator;
+import site.ycsb.generator.UniformLongGenerator;
+import site.ycsb.generator.ZipfianGenerator;
+import site.ycsb.measurements.Measurements;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -292,6 +292,11 @@ public class ClosedEconomyWorkload extends Workload {
 
     private Measurements _measurements;
     private Hashtable<String, String> _operations = new Hashtable<String, String>() {
+        /**
+         *
+         */
+        private static final long serialVersionUID = 1L;
+
         {
             put("READ", "TX-READ");
             put("UPDATE", "TX-UPDATE");
@@ -338,7 +343,7 @@ public class ClosedEconomyWorkload extends Workload {
         if (fieldlengthdistribution.compareTo("constant") == 0) {
             fieldlengthgenerator = new ConstantIntegerGenerator(total_cash/num_records);
         } else if (fieldlengthdistribution.compareTo("uniform") == 0) {
-            fieldlengthgenerator = new UniformIntegerGenerator(1, total_cash/num_records);
+            fieldlengthgenerator = new UniformLongGenerator(1, total_cash/num_records);
         } else if (fieldlengthdistribution.compareTo("zipfian") == 0) {
             fieldlengthgenerator = new ZipfianGenerator(1, fieldlength);
         } else if (fieldlengthdistribution.compareTo("histogram") == 0) {
@@ -416,7 +421,7 @@ public class ClosedEconomyWorkload extends Workload {
 
         transactioninsertkeysequence = new CounterGenerator(recordcount);
         if (requestdistrib.compareTo("uniform") == 0) {
-            keychooser = new UniformIntegerGenerator(0, recordcount - 1);
+            keychooser = new UniformLongGenerator(0, recordcount - 1);
         } else if (requestdistrib.compareTo("zipfian") == 0) {
             // it does this by generating a random "next key" in part by taking the modulus over the number of keys
             // if the number of keys changes, this would shift the modulus, and we don't want that to change which keys are popular
@@ -438,10 +443,10 @@ public class ClosedEconomyWorkload extends Workload {
             throw new WorkloadException("Unknown request distribution \"" + requestdistrib + "\"");
         }
 
-        fieldchooser = new UniformIntegerGenerator(0, fieldcount - 1);
+        fieldchooser = new UniformLongGenerator(0, fieldcount - 1);
 
         if (scanlengthdistrib.compareTo("uniform") == 0) {
-            scanlength = new UniformIntegerGenerator(1, maxscanlength);
+            scanlength = new UniformLongGenerator(1, maxscanlength);
         } else if (scanlengthdistrib.compareTo("zipfian") == 0) {
             scanlength = new ZipfianGenerator(1, maxscanlength);
         } else {
@@ -539,12 +544,11 @@ public class ClosedEconomyWorkload extends Workload {
         return ret;
     }
 
-    int nextKeynum() {
-        int keynum;
+    long nextKeynum() {
+        long keynum;
         if (keychooser instanceof ExponentialGenerator) {
             do {
-                keynum = transactioninsertkeysequence.lastValue()
-                        - keychooser.nextValue().intValue();
+                keynum = transactioninsertkeysequence.lastValue() - keychooser.nextValue().intValue();
             } while (keynum < 0);
         } else {
             do {
@@ -556,7 +560,7 @@ public class ClosedEconomyWorkload extends Workload {
 
     public boolean doTransactionRead(DB db) {
         // choose a random key
-        int keynum = nextKeynum();
+        long keynum = nextKeynum();
 
         String keyname = buildKeyName(keynum);
 
@@ -577,8 +581,8 @@ public class ClosedEconomyWorkload extends Workload {
 
     public boolean doTransactionReadModifyWrite(DB db) {
         // choose a random key
-        int first = nextKeynum();
-        int second = first;
+        long first = nextKeynum();
+        long second = first;
         while (second == first) {
             second = nextKeynum();
         }
@@ -587,7 +591,7 @@ public class ClosedEconomyWorkload extends Workload {
         // T2: B -> A. Hence, we only transfer from higher accounts to lower
         // accounts.
         if (first < second) {
-            int temp = first;
+            long temp = first;
             first = second;
             second = temp;
         }
@@ -647,7 +651,7 @@ public class ClosedEconomyWorkload extends Workload {
 
     public boolean doTransactionScan(DB db) {
         // choose a random key
-        int keynum = nextKeynum();
+        long keynum = nextKeynum();
 
         String startkeyname = buildKeyName(keynum);
 
@@ -670,7 +674,7 @@ public class ClosedEconomyWorkload extends Workload {
 
     public boolean doTransactionUpdate(DB db) {
         // choose a random key
-        int keynum = nextKeynum();
+        long keynum = nextKeynum();
 
         String keyname = buildKeyName(keynum);
 

@@ -88,7 +88,7 @@ public final class CommandLine {
 
     try {
       Class dbclass = classLoader.loadClass(dbname);
-      db = (DB) dbclass.newInstance();
+      db = (DB) dbclass.getDeclaredConstructor().newInstance();
     } catch (Exception e) {
       e.printStackTrace();
       System.exit(0);

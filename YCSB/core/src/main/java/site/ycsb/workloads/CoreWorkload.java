@@ -331,7 +331,13 @@ public class CoreWorkload extends Workload {
   public static final String INSERTION_RETRY_INTERVAL = "core_workload_insertion_retry_interval";
   public static final String INSERTION_RETRY_INTERVAL_DEFAULT = "3";
 
-  private Hashtable<String, String> _operations = new Hashtable<String, String>() {{
+  private Hashtable<String, String> operations = new Hashtable<String, String>() {
+    /**
+    *
+    */
+    private static final long serialVersionUID = 1L;
+
+    {
     put("READ", "TX-READ");
     put("UPDATE", "TX-UPDATE");
     put("INSERT", "TX-INSERT");

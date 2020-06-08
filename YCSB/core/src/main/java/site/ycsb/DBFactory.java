@@ -37,7 +37,7 @@ public final class DBFactory {
     try {
       Class dbclass = classLoader.loadClass(dbname);
 
-      ret = (DB) dbclass.newInstance();
+      ret = (DB) dbclass.getDeclaredConstructor().newInstance();
     } catch (Exception e) {
       e.printStackTrace();
       return null;

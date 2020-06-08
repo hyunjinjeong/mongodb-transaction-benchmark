@@ -17,6 +17,7 @@
 
 package site.ycsb.workloads;
 
+import site.ycsb.*;
 import site.ycsb.ByteIterator;
 import site.ycsb.DB;
 import site.ycsb.RandomByteIterator;
@@ -278,29 +279,33 @@ public class RestWorkload extends CoreWorkload {
   }
 
   @Override
-  public void doTransactionRead(DB db) {
+  public boolean doTransactionRead(DB db) {
     HashMap<String, ByteIterator> result = new HashMap<String, ByteIterator>();
-    db.read(null, getNextURL(1), null, result);
+    Status res = db.read(null, getNextURL(1), null, result);
+    return (res == Status.OK);
   }
 
   @Override
-  public void doTransactionInsert(DB db) {
+  public boolean doTransactionInsert(DB db) {
     HashMap<String, ByteIterator> value = new HashMap<String, ByteIterator>();
     // Create random bytes of insert data with a specific size.
     value.put("data", new RandomByteIterator(fieldlengthgenerator.nextValue().longValue()));
-    db.insert(null, getNextURL(2), value);
+    Status res = db.insert(null, getNextURL(2), value);
+    return (res == Status.OK);
   }
 
-  public void doTransactionDelete(DB db) {
-    db.delete(null, getNextURL(3));
+  public boolean doTransactionDelete(DB db) {
+    Status res = db.delete(null, getNextURL(3));
+    return (res == Status.OK);
   }
 
   @Override
-  public void doTransactionUpdate(DB db) {
+  public boolean doTransactionUpdate(DB db) {
     HashMap<String, ByteIterator> value = new HashMap<String, ByteIterator>();
     // Create random bytes of update data with a specific size.
     value.put("data", new RandomByteIterator(fieldlengthgenerator.nextValue().longValue()));
-    db.update(null, getNextURL(4), value);
+    Status res = db.update(null, getNextURL(4), value);
+    return (res == Status.OK);
   }
 
 }

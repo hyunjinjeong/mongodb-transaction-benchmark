@@ -380,7 +380,7 @@ public final class Client {
         }
       }
       try {
-        DB db = DBFactory.newDB(dbname, props);
+        DB db = DBFactory.newDB(dbname, props, tracer);
         db.init();
         if (workload.validate(db)) {
           System.out.println("Database validation succeeded");
@@ -392,10 +392,10 @@ public final class Client {
       catch (WorkloadException e) {
         System.out.println("Database validation failed with error: " + e.getMessage());
       }
-      catch (UnknownDBEXceptin e) {
+      catch (UnknownDBException e) {
         e.printStackTrace();
       }
-      catch (DBexception e) {
+      catch (DBException e) {
         e.printStackTrace();
       }
       
@@ -535,7 +535,7 @@ public final class Client {
     try {
       Class workloadclass = classLoader.loadClass(props.getProperty(WORKLOAD_PROPERTY));
 
-      return (Workload) workloadclass.newInstance();
+      return (Workload) workloadclass.getDeclaredConstructor().newInstance();
     } catch (Exception e) {
       e.printStackTrace();
       e.printStackTrace(System.out);
