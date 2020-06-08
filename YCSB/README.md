@@ -16,6 +16,8 @@ permissions and limitations under the License. See accompanying
 LICENSE file.
 -->
 
+This folder uses YCSB+T, which is the transactions supported version of YCSB.
+
 YCSB
 ====================================
 [![Build Status](https://travis-ci.org/brianfrankcooper/YCSB.png?branch=master)](https://travis-ci.org/brianfrankcooper/YCSB)

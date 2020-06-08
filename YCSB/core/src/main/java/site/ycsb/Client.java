@@ -378,9 +378,28 @@ public final class Client {
             // ignored
           }
         }
-
-        workload.cleanup();
       }
+      try {
+        DB db = DBFactory.newDB(dbname, props);
+        db.init();
+        if (workload.validate(db)) {
+          System.out.println("Database validation succeeded");
+        }
+        else {
+          System.out.println("Database validation failed");
+        }
+      }
+      catch (WorkloadException e) {
+        System.out.println("Database validation failed with error: " + e.getMessage());
+      }
+      catch (UnknownDBEXceptin e) {
+        e.printStackTrace();
+      }
+      catch (DBexception e) {
+        e.printStackTrace();
+      }
+      
+      workload.cleanup();
     } catch (WorkloadException e) {
       e.printStackTrace();
       e.printStackTrace(System.out);
