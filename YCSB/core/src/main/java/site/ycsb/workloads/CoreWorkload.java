@@ -331,6 +331,14 @@ public class CoreWorkload extends Workload {
   public static final String INSERTION_RETRY_INTERVAL = "core_workload_insertion_retry_interval";
   public static final String INSERTION_RETRY_INTERVAL_DEFAULT = "3";
 
+  private Hashtable<String, String> _operations = new Hashtable<String, String>() {{
+    put("READ", "TX-READ");
+    put("UPDATE", "TX-UPDATE");
+    put("INSERT", "TX-INSERT");
+    put("SCAN", "TX-SCAN");
+    put("READMODIFYWRITE","TX-READMODIFYWRITE");
+  }};
+
   /**
    * Field name prefix.
    */
@@ -634,6 +642,8 @@ public class CoreWorkload extends Workload {
    */
   @Override
   public boolean doTransaction(DB db, Object threadstate) {
+    boolean ret;
+    long st = System.nanoTime();
     String operation = operationchooser.nextString();
     if(operation == null) {
       return false;
@@ -641,22 +651,31 @@ public class CoreWorkload extends Workload {
 
     switch (operation) {
     case "READ":
-      doTransactionRead(db);
+      ret = doTransactionRead(db);
       break;
     case "UPDATE":
-      doTransactionUpdate(db);
+      ret = doTransactionUpdate(db);
       break;
     case "INSERT":
-      doTransactionInsert(db);
+      ret = doTransactionInsert(db);
       break;
     case "SCAN":
-      doTransactionScan(db);
+      ret = doTransactionScan(db);
       break;
     default:
-      doTransactionReadModifyWrite(db);
+      ret = doTransactionReadModifyWrite(db);
     }
 
-    return true;
+    long en = System.nanoTime();
+    measurements.measure(operations.get(operation), (int) ((en-st)/1000));
+    if (ret) {
+      measurements.reportStatus(operations.get(operation), Status.OK);
+    }
+    else {
+      measurements.reportStatus(operations.get(operation), Status.ERROR);
+    }
+
+    return ret;
   }
 
   /**
@@ -699,7 +718,7 @@ public class CoreWorkload extends Workload {
     return keynum;
   }
 
-  public void doTransactionRead(DB db) {
+  public boolean doTransactionRead(DB db) {
     // choose a random key
     long keynum = nextKeynum();
 
@@ -719,14 +738,16 @@ public class CoreWorkload extends Workload {
     }
 
     HashMap<String, ByteIterator> cells = new HashMap<String, ByteIterator>();
-    db.read(table, keyname, fields, cells);
+    Status status = db.read(table, keyname, fields, cells);
 
     if (dataintegrity) {
       verifyRow(keyname, cells);
     }
+
+    return (status == Status.OK);
   }
 
-  public void doTransactionReadModifyWrite(DB db) {
+  public boolean doTransactionReadModifyWrite(DB db) {
     // choose a random key
     long keynum = nextKeynum();
 
@@ -759,9 +780,9 @@ public class CoreWorkload extends Workload {
 
     long ist = measurements.getIntendedtartTimeNs();
     long st = System.nanoTime();
-    db.read(table, keyname, fields, cells);
+    Status readStatus = db.read(table, keyname, fields, cells);
 
-    db.update(table, keyname, values);
+    Status updateStatus = db.update(table, keyname, values);
 
     long en = System.nanoTime();
 
@@ -771,9 +792,11 @@ public class CoreWorkload extends Workload {
 
     measurements.measure("READ-MODIFY-WRITE", (int) ((en - st) / 1000));
     measurements.measureIntended("READ-MODIFY-WRITE", (int) ((en - ist) / 1000));
+
+    return (readStatus == updateStatus) && (updateStatus == Status.OK);
   }
 
-  public void doTransactionScan(DB db) {
+  public boolean doTransactionScan(DB db) {
     // choose a random key
     long keynum = nextKeynum();
 
@@ -792,10 +815,11 @@ public class CoreWorkload extends Workload {
       fields.add(fieldname);
     }
 
-    db.scan(table, startkeyname, len, fields, new Vector<HashMap<String, ByteIterator>>());
+    Status status = db.scan(table, startkeyname, len, fields, new Vector<HashMap<String, ByteIterator>>());
+    return (status == Status.OK);
   }
 
-  public void doTransactionUpdate(DB db) {
+  public boolean doTransactionUpdate(DB db) {
     // choose a random key
     long keynum = nextKeynum();
 
@@ -811,21 +835,24 @@ public class CoreWorkload extends Workload {
       values = buildSingleValue(keyname);
     }
 
-    db.update(table, keyname, values);
+    Status status = db.update(table, keyname, values);
+    return (status == Status.OK);
   }
 
-  public void doTransactionInsert(DB db) {
+  public boolean doTransactionInsert(DB db) {
     // choose the next key
     long keynum = transactioninsertkeysequence.nextValue();
+    Status status = Status.ERROR;
 
     try {
       String dbkey = buildKeyName(keynum);
 
       HashMap<String, ByteIterator> values = buildValues(dbkey);
-      db.insert(table, dbkey, values);
+      status = db.insert(table, dbkey, values);
     } finally {
       transactioninsertkeysequence.acknowledge(keynum);
     }
+    return (status == Status.OK);
   }
 
   /**
