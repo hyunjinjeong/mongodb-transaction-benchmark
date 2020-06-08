@@ -103,6 +103,51 @@ public class DBWrapper extends DB {
     }
   }
 
+  public void start() throws DBException {
+    long st = System.nanoTime();
+		try {
+      db.start();
+      long en = System.nanoTime();
+			measurements.measure("START", (int) ((en - st) / 1000));
+			measurements.reportStatus("START", Status.OK);
+    }
+    catch (DBException e) {
+			long en = System.nanoTime();
+			measurements.measure("START",(int)((en-st)/1000));
+			measurements.reportStatus("START", Status.ERROR);
+			throw e;
+		}
+  }
+
+  public void commit() throws DBException {
+		long st = System.nanoTime();
+		try {
+			db.commit();
+			long en = System.nanoTime();
+			measurements.measure("COMMIT", (int) ((en - st) / 1000));
+			measurements.reportStatus("COMMIT", Status.OK);
+    }
+    catch (DBException e) {
+			long en = System.nanoTime();
+			measurements.measure("ABORT", (int) ((en - st) / 1000));
+			measurements.reportStatus("ABORT", Status.ERROR);
+		}
+  }
+  
+  public void abort() throws DBException {
+		long st = System.nanoTime();
+		try {
+			db.abort();
+			long en = System.nanoTime();
+			measurements.measure("ABORT", (int) ((en - st) / 1000));
+			measurements.reportStatus("ABORT", Status.OK);
+		} catch (DBException e) {
+			long en=System.nanoTime();
+			measurements.measure("ABORT",(int)((en-st)/1000));
+			measurements.reportStatus("ABORT", Status.ERROR);
+		}
+	}
+
   /**
    * Cleanup any state for this DB.
    * Called once per DB instance; there is one DB instance per client thread.
