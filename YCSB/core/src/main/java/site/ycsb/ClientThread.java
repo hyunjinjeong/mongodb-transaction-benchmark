@@ -125,8 +125,8 @@ public class ClientThread implements Runnable {
               db.commit();
             }
             else {
+              db.abort();
             }
-            db.abort();
           }
           catch (DBException e) {
             throw new WorkloadException(e);
@@ -147,8 +147,8 @@ public class ClientThread implements Runnable {
               db.commit();
             }
             else {
+              db.abort();
             }
-            db.abort();
           }
           catch (DBException e) {
             throw new WorkloadException(e);

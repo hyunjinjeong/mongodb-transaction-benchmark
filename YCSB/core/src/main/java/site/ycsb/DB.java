@@ -78,7 +78,7 @@ public abstract class DB {
   }
 
   /**
-	 * Start a database transaction. 
+   * * Start a database transaction. 
 	 */
 	public void start() throws DBException {
 	}
